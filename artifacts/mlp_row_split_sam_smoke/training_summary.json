@@ -1,0 +1,73 @@
+{
+  "dataset_root": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw",
+  "output_dir": "/Users/doyoung/Documents/FallDetection/artifacts/mlp_row_split_sam_smoke",
+  "class_names": [
+    "none",
+    "occupy",
+    "walk"
+  ],
+  "input_dim": 228,
+  "hidden_dims": [
+    256,
+    128
+  ],
+  "epochs": 2,
+  "batch_size": 256,
+  "optimizer": "sam_sgd",
+  "learning_rate": 0.01,
+  "weight_decay": 0.0001,
+  "sam_rho": 0.05,
+  "sgd_momentum": 0.9,
+  "seed": 42,
+  "val_ratio": 0.2,
+  "samples_total": 56450,
+  "samples_train": 45160,
+  "samples_val": 11290,
+  "skipped_rows": 3,
+  "best_val_accuracy": 0.9920283436669619,
+  "validation_confusion_matrix": [
+    [
+      2420,
+      0,
+      3
+    ],
+    [
+      0,
+      2757,
+      12
+    ],
+    [
+      35,
+      40,
+      6023
+    ]
+  ],
+  "train_class_counts": {
+    "none": 9693,
+    "occupy": 11075,
+    "walk": 24392
+  },
+  "val_class_counts": {
+    "none": 2423,
+    "occupy": 2769,
+    "walk": 6098
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "batch_loss_mean": 0.19595611095428467,
+      "train_loss": 0.08297073841094971,
+      "train_accuracy": 0.9901240035429584,
+      "val_loss": 0.08599469065666199,
+      "val_accuracy": 0.9875996457041629
+    },
+    {
+      "epoch": 2,
+      "batch_loss_mean": 0.07581233233213425,
+      "train_loss": 0.06964010745286942,
+      "train_accuracy": 0.9923604960141719,
+      "val_loss": 0.07200457155704498,
+      "val_accuracy": 0.9920283436669619
+    }
+  ]
+}

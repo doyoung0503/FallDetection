@@ -1,0 +1,9 @@
+.DS_Store
+.venv/
+.venv313/
+dataset/
+paper/
+자료집/
+자료집/
+__pycache__/
+*.pyc

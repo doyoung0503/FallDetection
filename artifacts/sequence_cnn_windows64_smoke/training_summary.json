@@ -1,0 +1,84 @@
+{
+  "windows_root": "/Users/doyoung/Documents/FallDetection/dataset/sequence_10ms_amp_mask/windows_64",
+  "output_dir": "/Users/doyoung/Documents/FallDetection/artifacts/sequence_cnn_windows64_smoke",
+  "class_names": [
+    "none",
+    "occupy",
+    "walk"
+  ],
+  "input_channels": 115,
+  "amplitude_channels": 114,
+  "epochs": 2,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "hidden_channels": [
+    64,
+    128
+  ],
+  "kernel_sizes": [
+    5,
+    3
+  ],
+  "val_ratio": 0.2,
+  "seed": 42,
+  "split_unit": "source_csv",
+  "samples_train": 2084,
+  "samples_val": 393,
+  "train_class_counts": {
+    "none": 856,
+    "occupy": 351,
+    "walk": 877
+  },
+  "val_class_counts": {
+    "none": 185,
+    "occupy": 91,
+    "walk": 117
+  },
+  "train_source_file_counts": {
+    "none": 14,
+    "occupy": 11,
+    "walk": 30
+  },
+  "val_source_file_counts": {
+    "none": 3,
+    "occupy": 3,
+    "walk": 8
+  },
+  "best_val_accuracy": 1.0,
+  "validation_confusion_matrix": [
+    [
+      185,
+      0,
+      0
+    ],
+    [
+      0,
+      91,
+      0
+    ],
+    [
+      0,
+      0,
+      117
+    ]
+  ],
+  "history": [
+    {
+      "epoch": 1,
+      "batch_loss_mean": 0.09978285245597363,
+      "train_loss": 0.02030871052182082,
+      "train_accuracy": 1.0,
+      "val_loss": 0.020180361877594675,
+      "val_accuracy": 1.0
+    },
+    {
+      "epoch": 2,
+      "batch_loss_mean": 0.019994859103903626,
+      "train_loss": 0.019700637820995216,
+      "train_accuracy": 1.0,
+      "val_loss": 0.019571409161601747,
+      "val_accuracy": 1.0
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "windows_root": "/Users/doyoung/Documents/FallDetection/dataset/sequence_10ms_amp_mask_stride20/windows_50",
+  "checkpoint": "/Users/doyoung/Documents/FallDetection/artifacts/sequence_cnn_torch_windows50_stride20_timefile_mps_seed42/best_model.pt",
+  "split_mode": "time_file",
+  "seed": 42,
+  "validation_sample_count": 75,
+  "validation_class_counts": {
+    "none": 28,
+    "occupy": 19,
+    "walk": 28
+  },
+  "temporal_summary": {
+    "none": {
+      "mean_abs_delta_mean": 5.689854621887207,
+      "mean_abs_delta_std": 0.9448713660240173,
+      "temporal_std_mean": 7.272914886474609,
+      "temporal_std_std": 0.7841383218765259
+    },
+    "occupy": {
+      "mean_abs_delta_mean": 5.338908672332764,
+      "mean_abs_delta_std": 1.5408270359039307,
+      "temporal_std_mean": 6.817800521850586,
+      "temporal_std_std": 1.3845854997634888
+    },
+    "walk": {
+      "mean_abs_delta_mean": 5.036855220794678,
+      "mean_abs_delta_std": 1.9246855974197388,
+      "temporal_std_mean": 12.967150688171387,
+      "temporal_std_std": 3.3832037448883057
+    }
+  },
+  "outputs": {
+    "raw_embeddings": "/Users/doyoung/Documents/FallDetection/analysis/sequence_stride20_windows50_visuals/raw_embeddings.png",
+    "cnn_embeddings": "/Users/doyoung/Documents/FallDetection/analysis/sequence_stride20_windows50_visuals/cnn_embeddings.png",
+    "class_heatmaps": "/Users/doyoung/Documents/FallDetection/analysis/sequence_stride20_windows50_visuals/class_heatmaps.png",
+    "temporal_variation": "/Users/doyoung/Documents/FallDetection/analysis/sequence_stride20_windows50_visuals/temporal_variation.png"
+  }
+}

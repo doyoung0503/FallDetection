@@ -1,0 +1,250 @@
+{
+  "dataset_root": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw",
+  "seed": 42,
+  "val_ratio": 0.2,
+  "validation_sample_count": 11290,
+  "models": {
+    "adam_20ep": {
+      "checkpoint": "/Users/doyoung/Documents/FallDetection/artifacts/mlp_row_split/best_model.npz",
+      "misclassified_count": 13,
+      "correct_count": 11277
+    },
+    "adam_50ep": {
+      "checkpoint": "/Users/doyoung/Documents/FallDetection/artifacts/mlp_row_split_50ep/best_model.npz",
+      "misclassified_count": 11,
+      "correct_count": 11279
+    },
+    "sam_sgd_25ep": {
+      "checkpoint": "/Users/doyoung/Documents/FallDetection/artifacts/mlp_row_split_sam_sgd_25ep/best_model.npz",
+      "misclassified_count": 17,
+      "correct_count": 11273
+    }
+  },
+  "pairwise_overlap": [
+    {
+      "left": "adam_20ep",
+      "right": "adam_50ep",
+      "left_count": 13,
+      "right_count": 11,
+      "intersection_count": 5,
+      "union_count": 19,
+      "jaccard": 0.2631578947368421
+    },
+    {
+      "left": "adam_20ep",
+      "right": "sam_sgd_25ep",
+      "left_count": 13,
+      "right_count": 17,
+      "intersection_count": 9,
+      "union_count": 21,
+      "jaccard": 0.42857142857142855
+    },
+    {
+      "left": "adam_50ep",
+      "right": "sam_sgd_25ep",
+      "left_count": 11,
+      "right_count": 17,
+      "intersection_count": 8,
+      "union_count": 20,
+      "jaccard": 0.4
+    }
+  ],
+  "common_misclassified_count": 5,
+  "common_misclassified_samples": [
+    {
+      "dataset_index": 7384,
+      "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/none/csi_data_none_20260326_024533.csv",
+      "row_number": 325,
+      "true_label": "none",
+      "predictions": {
+        "adam_20ep": "walk",
+        "adam_50ep": "walk",
+        "sam_sgd_25ep": "walk"
+      }
+    },
+    {
+      "dataset_index": 9953,
+      "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/none/csi_data_none_20260326_024613.csv",
+      "row_number": 82,
+      "true_label": "none",
+      "predictions": {
+        "adam_20ep": "walk",
+        "adam_50ep": "walk",
+        "sam_sgd_25ep": "walk"
+      }
+    },
+    {
+      "dataset_index": 14494,
+      "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023407.csv",
+      "row_number": 492,
+      "true_label": "occupy",
+      "predictions": {
+        "adam_20ep": "walk",
+        "adam_50ep": "walk",
+        "sam_sgd_25ep": "walk"
+      }
+    },
+    {
+      "dataset_index": 30001,
+      "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022238.csv",
+      "row_number": 569,
+      "true_label": "walk",
+      "predictions": {
+        "adam_20ep": "none",
+        "adam_50ep": "none",
+        "sam_sgd_25ep": "none"
+      }
+    },
+    {
+      "dataset_index": 35276,
+      "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022359.csv",
+      "row_number": 298,
+      "true_label": "walk",
+      "predictions": {
+        "adam_20ep": "occupy",
+        "adam_50ep": "occupy",
+        "sam_sgd_25ep": "occupy"
+      }
+    }
+  ],
+  "unique_misclassified_samples": {
+    "adam_20ep": [
+      {
+        "dataset_index": 12170,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023337.csv",
+        "row_number": 56,
+        "true_label": "occupy",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "occupy",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 12694,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023337.csv",
+        "row_number": 580,
+        "true_label": "occupy",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "occupy",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 12984,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023347.csv",
+        "row_number": 236,
+        "true_label": "occupy",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "occupy",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 49395,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022719.csv",
+        "row_number": 628,
+        "true_label": "walk",
+        "predictions": {
+          "adam_20ep": "occupy",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "walk"
+        }
+      }
+    ],
+    "adam_50ep": [
+      {
+        "dataset_index": 12171,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023337.csv",
+        "row_number": 57,
+        "true_label": "occupy",
+        "predictions": {
+          "adam_20ep": "occupy",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 13001,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023347.csv",
+        "row_number": 253,
+        "true_label": "occupy",
+        "predictions": {
+          "adam_20ep": "occupy",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 21828,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/occupy/csi_data_occupy_20260326_023607.csv",
+        "row_number": 463,
+        "true_label": "occupy",
+        "predictions": {
+          "adam_20ep": "occupy",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "occupy"
+        }
+      }
+    ],
+    "sam_sgd_25ep": [
+      {
+        "dataset_index": 44587,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022609.csv",
+        "row_number": 666,
+        "true_label": "walk",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 48232,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022709.csv",
+        "row_number": 161,
+        "true_label": "walk",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "none"
+        }
+      },
+      {
+        "dataset_index": 51223,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022809.csv",
+        "row_number": 198,
+        "true_label": "walk",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "none"
+        }
+      },
+      {
+        "dataset_index": 52640,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022849.csv",
+        "row_number": 162,
+        "true_label": "walk",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "occupy"
+        }
+      },
+      {
+        "dataset_index": 53416,
+        "path": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw/walk/csi_data_walk_20260326_022909.csv",
+        "row_number": 230,
+        "true_label": "walk",
+        "predictions": {
+          "adam_20ep": "walk",
+          "adam_50ep": "walk",
+          "sam_sgd_25ep": "none"
+        }
+      }
+    ]
+  }
+}

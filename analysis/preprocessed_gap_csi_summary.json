@@ -1,0 +1,74 @@
+{
+  "overall_gap_stats_all_pairs": {
+    "pair_count": 56358,
+    "mean_us": 16052.581798502431,
+    "std_us": 191902.26531110707,
+    "median_us": 10849.0,
+    "p90_us": 21265.300000000003,
+    "p95_us": 28807.0,
+    "p99_us": 33525.0,
+    "max_us": 22799963.0
+  },
+  "overall_gap_stats_trimmed_le_p99": {
+    "pair_count": 55795,
+    "mean_us": 14168.353347074111,
+    "std_us": 5960.382556435917,
+    "median_us": 10776.0
+  },
+  "valid_csi_pair_gap_quantiles_us": {
+    "q10": 9163.3,
+    "q25": 9994.0,
+    "q50": 10849.0,
+    "q75": 19979.0,
+    "q90": 21264.0,
+    "q95": 28801.79999999999,
+    "q99": 33524.47
+  },
+  "small_gap_group": {
+    "definition": "gap <= q25",
+    "count": 14829,
+    "gap_mean_us": 8995.86762424978,
+    "amp_diff_mean": 7.761437354434147,
+    "amp_diff_std": 8.047198544493485,
+    "complex_rmse_mean": 62.46567272955058,
+    "complex_rmse_std": 36.50101796281161
+  },
+  "large_gap_group": {
+    "definition": "gap >= q75",
+    "count": 14125,
+    "gap_mean_us": 28096.766513274335,
+    "amp_diff_mean": 9.269928651894089,
+    "amp_diff_std": 8.323842684188193,
+    "complex_rmse_mean": 67.16035367751333,
+    "complex_rmse_std": 36.97273491591279
+  },
+  "per_class_gap_stats": {
+    "none": {
+      "pair_count": 12099,
+      "mean_us": 14211.585089676833,
+      "std_us": 6625.069682836105,
+      "median_us": 10373.0,
+      "p90_us": 21313.2,
+      "p99_us": 33525.66000000002,
+      "max_us": 81060.0
+    },
+    "occupy": {
+      "pair_count": 13821,
+      "mean_us": 15005.742203892627,
+      "std_us": 6235.436942056724,
+      "median_us": 12166.0,
+      "p90_us": 21301.0,
+      "p99_us": 31692.199999999997,
+      "max_us": 76969.0
+    },
+    "walk": {
+      "pair_count": 30438,
+      "mean_us": 17259.71069058414,
+      "std_us": 261052.2843553921,
+      "median_us": 10552.0,
+      "p90_us": 21190.199999999997,
+      "p99_us": 35008.520000000004,
+      "max_us": 22799963.0
+    }
+  }
+}

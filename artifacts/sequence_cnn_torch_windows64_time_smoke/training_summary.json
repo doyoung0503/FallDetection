@@ -1,0 +1,72 @@
+{
+  "windows_root": "/Users/doyoung/Documents/FallDetection/dataset/sequence_10ms_amp_mask/windows_64",
+  "output_dir": "/Users/doyoung/Documents/FallDetection/artifacts/sequence_cnn_torch_windows64_time_smoke",
+  "class_names": [
+    "none",
+    "occupy",
+    "walk"
+  ],
+  "split_mode": "time_file",
+  "device_requested": "auto",
+  "device_resolved": "cpu",
+  "mps_built": true,
+  "mps_available": false,
+  "epochs": 1,
+  "batch_size": 32,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "hidden_channels": [
+    64,
+    128
+  ],
+  "kernel_sizes": [
+    5,
+    3
+  ],
+  "val_ratio": 0.2,
+  "seed": 42,
+  "num_workers": 0,
+  "num_threads": 8,
+  "num_interop_threads": 2,
+  "smoke_train_limit": 64,
+  "smoke_val_limit": 32,
+  "samples_train": 192,
+  "samples_val": 96,
+  "train_source_file_counts": {
+    "none": 14,
+    "occupy": 11,
+    "walk": 30
+  },
+  "val_source_file_counts": {
+    "none": 3,
+    "occupy": 3,
+    "walk": 8
+  },
+  "best_val_accuracy": 0.9479166666666666,
+  "validation_confusion_matrix": [
+    [
+      27,
+      0,
+      5
+    ],
+    [
+      0,
+      32,
+      0
+    ],
+    [
+      0,
+      0,
+      32
+    ]
+  ],
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.779743512471517,
+      "train_accuracy": 0.71875,
+      "val_loss": 0.2359196224133484,
+      "val_accuracy": 0.9479166666666666
+    }
+  ]
+}

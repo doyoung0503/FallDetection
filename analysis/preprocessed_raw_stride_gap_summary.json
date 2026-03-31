@@ -1,0 +1,119 @@
+{
+  "classes": {
+    "large": {
+      "files": 19,
+      "files_with_gaps": 19,
+      "invalid_rows": 1,
+      "monotonic_violations": 0,
+      "gap_count": 10745,
+      "gap_mean_us": 16360.996370404839,
+      "gap_std_us": 7413.936035524052,
+      "gap_median_us": 16950,
+      "gap_min_us": 121,
+      "gap_p90_us": 22729,
+      "gap_p99_us": 41239,
+      "gap_max_us": 75502,
+      "bucket_counts": {
+        "10ms": 4207,
+        "20ms": 4072,
+        "30ms": 438,
+        "40ms_or_more_on_grid": 198,
+        "off_grid": 1830
+      }
+    },
+    "normal": {
+      "files": 21,
+      "files_with_gaps": 21,
+      "invalid_rows": 2,
+      "monotonic_violations": 0,
+      "gap_count": 10067,
+      "gap_mean_us": 20905.518625211087,
+      "gap_std_us": 321353.9108753485,
+      "gap_median_us": 14499,
+      "gap_min_us": 121,
+      "gap_p90_us": 27588,
+      "gap_p99_us": 44727,
+      "gap_max_us": 22819840,
+      "bucket_counts": {
+        "10ms": 4326,
+        "20ms": 3215,
+        "30ms": 610,
+        "40ms_or_more_on_grid": 277,
+        "off_grid": 1639
+      }
+    },
+    "small": {
+      "files": 21,
+      "files_with_gaps": 21,
+      "invalid_rows": 1,
+      "monotonic_violations": 0,
+      "gap_count": 11290,
+      "gap_mean_us": 16428.83312666076,
+      "gap_std_us": 8138.708123370354,
+      "gap_median_us": 14806.5,
+      "gap_min_us": 121,
+      "gap_p90_us": 26911,
+      "gap_p99_us": 41520,
+      "gap_max_us": 84095,
+      "bucket_counts": {
+        "10ms": 4722,
+        "20ms": 3638,
+        "30ms": 626,
+        "40ms_or_more_on_grid": 310,
+        "off_grid": 1994
+      }
+    }
+  },
+  "overall": {
+    "gap_count": 32102,
+    "gap_mean_us": 17809.989657965234,
+    "gap_std_us": 180084.4806681857,
+    "gap_median_us": 15573.0,
+    "gap_min_us": 121,
+    "gap_p90_us": 24722,
+    "gap_p99_us": 42054,
+    "gap_max_us": 22819840,
+    "bucket_counts": {
+      "10ms": 13255,
+      "20ms": 10925,
+      "30ms": 1674,
+      "40ms_or_more_on_grid": 785,
+      "off_grid": 5463
+    },
+    "bucket_ratios": {
+      "10ms": 0.4129026228895396,
+      "20ms": 0.34032147529748924,
+      "30ms": 0.05214628372064046,
+      "40ms_or_more_on_grid": 0.024453305090025544,
+      "off_grid": 0.17017631300230515
+    },
+    "outliers_ge_100ms": [
+      {
+        "class": "normal",
+        "file": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw_stride/normal/csi_data_normal_20260326_041901.csv",
+        "gap_us": 100058
+      },
+      {
+        "class": "normal",
+        "file": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw_stride/normal/csi_data_normal_20260326_041901.csv",
+        "gap_us": 143653
+      },
+      {
+        "class": "normal",
+        "file": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw_stride/normal/csi_data_normal_20260326_042011.csv",
+        "gap_us": 100023
+      },
+      {
+        "class": "normal",
+        "file": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw_stride/normal/csi_data_normal_20260326_042151.csv",
+        "gap_us": 22799947
+      },
+      {
+        "class": "normal",
+        "file": "/Users/doyoung/Documents/FallDetection/dataset/preprocessed_raw_stride/normal/csi_data_normal_20260326_042553.csv",
+        "gap_us": 22819840
+      }
+    ],
+    "outlier_count_ge_100ms": 5
+  }
+}
