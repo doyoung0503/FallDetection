@@ -438,13 +438,99 @@ validation set 기준 temporal summary:
 
 ---
 
-## 8. 재현에 사용한 주요 스크립트
+## 8. XFall-style SDP 전처리 실험
+
+XFall 논문을 확인한 뒤, `none / occupy / walk` 문제에 대해 **상관 기반 SDP 표현**도 별도로 실험했습니다. 이때 두 가지 방식을 비교했습니다.
+
+### 8.1 논문식 SDP
+
+첫 번째는 XFall 본문 구조에 가깝게,
+
+- 먼저 raw CSI window를 자르고
+- 그 window 내부에서 lagged normalized correlation을 계산한 뒤
+- `lag x time` SDP를 만드는 방식입니다.
+
+관련 코드:
+
+- [`scripts/build_xfall_sdp_dataset.py`](scripts/build_xfall_sdp_dataset.py)
+
+이 방식으로 다음 조합을 실험했습니다.
+
+| Representation | Shape | Best val acc | Macro F1 |
+| --- | --- | ---: | ---: |
+| paper-style, `window=50`, `lag=20` | `20 x 30` | 0.6884 | 0.6563 |
+| paper-style, `window=64`, `lag=20` | `20 x 44` | 0.7242 | 0.7119 |
+| paper-style, `window=64`, `lag=49` | `49 x 15` | 0.7376 | 0.7172 |
+
+관련 산출물:
+
+- [`artifacts/xfall_sdp_cnn_windows50_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_windows50_time_mps/training_summary.json)
+- [`artifacts/xfall_sdp_cnn_windows64_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_windows64_time_mps/training_summary.json)
+- [`artifacts/xfall_sdp_cnn_windows64_lag49_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_windows64_lag49_time_mps/training_summary.json)
+
+관찰 결과:
+
+- `window=50, lag=49`처럼 `WT = window - lag`가 너무 작아지면 시간축 정보가 사실상 사라져 성능이 악화됨
+- `window=64`에서는 긴 lag가 약간 도움을 줄 수 있었지만, 전체적으로는 입력 width가 줄어드는 제약이 큼
+
+### 8.2 Lag-first SDP
+
+두 번째는 이 프로젝트에서 추가로 제안한 방식으로,
+
+- 각 시점마다 과거 `lag` 길이에 대한 상관 벡터를 먼저 만들고
+- 이 lag-vector sequence를 다시 fixed window로 자르는 방식입니다.
+
+즉, 논문식 `window -> lag`가 아니라 `lag-profile -> window` 순서를 택했습니다. 이 방식은 최종 입력 width를 고정하기 쉽고, 더 긴 lag 문맥을 유지하면서도 충분한 time width를 보존할 수 있습니다.
+
+관련 코드:
+
+- [`scripts/build_xfall_sdp_lagfirst_dataset.py`](scripts/build_xfall_sdp_lagfirst_dataset.py)
+
+실험 결과:
+
+| Representation | Shape | Best val acc | Macro F1 |
+| --- | --- | ---: | ---: |
+| lag-first, `lag=30`, `window=50` | `30 x 50` | 0.7589 | 0.7507 |
+| lag-first, `lag=30`, `window=64` | `30 x 64` | 0.7844 | 0.7742 |
+| lag-first, `lag=50`, `window=50` | `50 x 50` | 0.7549 | 0.7564 |
+| lag-first, `lag=50`, `window=64` | `50 x 64` | 0.8231 | 0.8152 |
+
+관련 산출물:
+
+- [`artifacts/xfall_sdp_cnn_lagfirst_windows50_lag30_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_lagfirst_windows50_lag30_time_mps/training_summary.json)
+- [`artifacts/xfall_sdp_cnn_lagfirst_windows64_lag30_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_lagfirst_windows64_lag30_time_mps/training_summary.json)
+- [`artifacts/xfall_sdp_cnn_lagfirst_windows50_lag50_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_lagfirst_windows50_lag50_time_mps/training_summary.json)
+- [`artifacts/xfall_sdp_cnn_lagfirst_windows64_lag50_time_mps/training_summary.json`](artifacts/xfall_sdp_cnn_lagfirst_windows64_lag50_time_mps/training_summary.json)
+
+핵심 해석:
+
+- 현재 데이터에서는 논문식 SDP보다 lag-first SDP가 더 잘 맞았음
+- 특히 `lag=50, window=64`가 가장 높은 성능을 보였음
+- 이는 긴 lag 문맥을 유지하면서도 time width를 충분히 확보한 표현이 `none / occupy / walk` 분리에 더 유리하다는 신호로 해석할 수 있음
+
+### 8.3 SDP 학습 코드
+
+두 SDP 표현 모두 동일한 2D CNN baseline으로 실험했습니다.
+
+- 입력: `1 x lag x width`
+- model: `Conv2d(1→32) -> ReLU -> Conv2d(32→64) -> ReLU -> Global Average Pooling -> Linear(3)`
+
+관련 코드:
+
+- [`scripts/train_xfall_sdp_cnn_torch.py`](scripts/train_xfall_sdp_cnn_torch.py)
+
+---
+
+## 9. 재현에 사용한 주요 스크립트
 
 - HT-LTF 추출: [`scripts/preprocess_raw_htltf.py`](scripts/preprocess_raw_htltf.py)
 - 시계열 데이터셋 생성: [`scripts/build_resampled_sequence_dataset.py`](scripts/build_resampled_sequence_dataset.py)
 - row-level MLP 학습: [`scripts/train_row_mlp.py`](scripts/train_row_mlp.py)
 - NumPy 1D CNN baseline: [`scripts/train_sequence_cnn.py`](scripts/train_sequence_cnn.py)
 - PyTorch 1D CNN baseline: [`scripts/train_sequence_cnn_torch.py`](scripts/train_sequence_cnn_torch.py)
+- XFall paper-style SDP 생성: [`scripts/build_xfall_sdp_dataset.py`](scripts/build_xfall_sdp_dataset.py)
+- XFall lag-first SDP 생성: [`scripts/build_xfall_sdp_lagfirst_dataset.py`](scripts/build_xfall_sdp_lagfirst_dataset.py)
+- SDP 2D CNN baseline: [`scripts/train_xfall_sdp_cnn_torch.py`](scripts/train_xfall_sdp_cnn_torch.py)
 - SAM optimizer:
   - NumPy row MLP용 [`scripts/sam_optimizer.py`](scripts/sam_optimizer.py)
   - PyTorch sequence CNN용 [`scripts/sam_torch.py`](scripts/sam_torch.py)
@@ -452,7 +538,7 @@ validation set 기준 temporal summary:
 
 ---
 
-## 9. 실행 메모
+## 10. 실행 메모
 
 이 저장소는 데이터셋 자체를 포함하지 않으므로, 동일한 실험을 재현하려면 로컬에 동일한 디렉터리 구조의 데이터셋을 준비해야 합니다.
 
