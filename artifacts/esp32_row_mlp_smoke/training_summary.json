@@ -1,0 +1,61 @@
+{
+  "dataset_root": "/Users/doyoung/Documents/FallDetection/dataset/esp32_raw_csi_variants/lltf_only",
+  "output_dir": "/Users/doyoung/Documents/FallDetection/artifacts/esp32_row_mlp_smoke",
+  "seed": 42,
+  "epochs": 1,
+  "batch_size": 4096,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "hidden_dim_1": 256,
+  "hidden_dim_2": 128,
+  "input_dim": 104,
+  "device": "mps",
+  "mps_built": true,
+  "mps_available": true,
+  "skipped_rows": 0,
+  "train_counts": {
+    "big": 128893,
+    "small": 191401
+  },
+  "validation_counts": {
+    "big": 29878,
+    "small": 50412
+  },
+  "best_epoch": 1,
+  "best_validation_accuracy": 0.5964503674181093,
+  "best_validation_loss": 0.661970681689985,
+  "best_confusion_matrix": [
+    [
+      2345,
+      27533
+    ],
+    [
+      4868,
+      45544
+    ]
+  ],
+  "metrics": {
+    "per_class": {
+      "big": {
+        "precision": 0.3251074448911687,
+        "recall": 0.07848584242586519,
+        "f1": 0.12644576851527325
+      },
+      "small": {
+        "precision": 0.6232330281757598,
+        "recall": 0.9034356899150996,
+        "f1": 0.7376203548494198
+      }
+    },
+    "macro_f1": 0.4320330616823465
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6602070136406024,
+      "train_accuracy": 0.6008979250313774,
+      "validation_loss": 0.661970681689985,
+      "validation_accuracy": 0.5964503674181093
+    }
+  ]
+}

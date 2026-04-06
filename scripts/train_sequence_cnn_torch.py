@@ -5,9 +5,11 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import os
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
@@ -15,6 +17,11 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from sam_torch import SAM
+
+try:
+    import wandb
+except ImportError:
+    wandb = None
 
 
 AMPLITUDE_DIM = 114
@@ -185,6 +192,54 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=None,
         help="Optional cap on the number of validation windows for smoke tests.",
+    )
+    parser.add_argument(
+        "--wandb-project",
+        type=str,
+        default=None,
+        help="Optional Weights & Biases project name for online/offline logging.",
+    )
+    parser.add_argument(
+        "--wandb-entity",
+        type=str,
+        default=None,
+        help="Optional Weights & Biases entity/team.",
+    )
+    parser.add_argument(
+        "--wandb-run-name",
+        type=str,
+        default=None,
+        help="Optional Weights & Biases run name.",
+    )
+    parser.add_argument(
+        "--wandb-group",
+        type=str,
+        default=None,
+        help="Optional Weights & Biases run group, useful for dataset-wise comparisons.",
+    )
+    parser.add_argument(
+        "--wandb-job-type",
+        type=str,
+        default="train",
+        help="Optional Weights & Biases job type.",
+    )
+    parser.add_argument(
+        "--wandb-tags",
+        nargs="*",
+        default=None,
+        help="Optional Weights & Biases tags.",
+    )
+    parser.add_argument(
+        "--wandb-mode",
+        choices=("online", "offline", "disabled"),
+        default="online",
+        help="Weights & Biases logging mode.",
+    )
+    parser.add_argument(
+        "--wandb-notes",
+        type=str,
+        default=None,
+        help="Optional Weights & Biases notes.",
     )
     return parser.parse_args()
 
@@ -371,6 +426,90 @@ def evaluate(
     return total_loss / total_count, total_correct / total_count, confusion
 
 
+def build_wandb_config(
+    args: argparse.Namespace,
+    *,
+    class_names: list[str],
+    resolved_device_name: str,
+    train_samples: list[WindowSample],
+    val_samples: list[WindowSample],
+    train_files: dict[str, set[str]],
+    val_files: dict[str, set[str]],
+) -> dict[str, Any]:
+    return {
+        "windows_root": str(args.windows_root),
+        "output_dir": str(args.output_dir),
+        "class_names": class_names,
+        "split_mode": args.split_mode,
+        "val_ratio": args.val_ratio,
+        "seed": args.seed,
+        "device_requested": args.device,
+        "device_resolved": resolved_device_name,
+        "epochs": args.epochs,
+        "batch_size": args.batch_size,
+        "learning_rate": args.learning_rate,
+        "weight_decay": args.weight_decay,
+        "optimizer": args.optimizer,
+        "sam_rho": args.sam_rho if args.optimizer == "sam_sgd" else None,
+        "sgd_momentum": args.sgd_momentum if args.optimizer == "sam_sgd" else None,
+        "hidden_channels_1": args.hidden_channels_1,
+        "hidden_channels_2": args.hidden_channels_2,
+        "kernel_size_1": args.kernel_size_1,
+        "kernel_size_2": args.kernel_size_2,
+        "num_workers": args.num_workers,
+        "num_threads": args.num_threads if resolved_device_name == "cpu" else None,
+        "num_interop_threads": (
+            args.num_interop_threads if resolved_device_name == "cpu" else None
+        ),
+        "samples_train": len(train_samples),
+        "samples_val": len(val_samples),
+        "train_source_file_counts": {
+            class_name: len(train_files[class_name]) for class_name in class_names
+        },
+        "val_source_file_counts": {
+            class_name: len(val_files[class_name]) for class_name in class_names
+        },
+    }
+
+
+def maybe_init_wandb(
+    args: argparse.Namespace,
+    *,
+    config: dict[str, Any],
+) -> Any | None:
+    if args.wandb_project is None or args.wandb_mode == "disabled":
+        return None
+    if wandb is None:
+        raise RuntimeError(
+            "wandb logging was requested but the wandb package is not installed."
+        )
+
+    wandb_root = args.output_dir / "wandb"
+    wandb_cache = wandb_root / ".cache"
+    wandb_config = wandb_root / ".config"
+    wandb_data = wandb_root / ".data"
+    for path in (wandb_root, wandb_cache, wandb_config, wandb_data):
+        path.mkdir(parents=True, exist_ok=True)
+
+    os.environ["WANDB_DIR"] = str(wandb_root)
+    os.environ["WANDB_CACHE_DIR"] = str(wandb_cache)
+    os.environ["WANDB_CONFIG_DIR"] = str(wandb_config)
+    os.environ["WANDB_DATA_DIR"] = str(wandb_data)
+
+    return wandb.init(
+        project=args.wandb_project,
+        entity=args.wandb_entity or None,
+        name=args.wandb_run_name or None,
+        group=args.wandb_group or None,
+        job_type=args.wandb_job_type,
+        tags=args.wandb_tags or None,
+        notes=args.wandb_notes,
+        mode=args.wandb_mode,
+        config=config,
+        dir=str(wandb_root),
+    )
+
+
 def main() -> None:
     args = parse_args()
     rng = np.random.default_rng(args.seed)
@@ -404,6 +543,19 @@ def main() -> None:
     if resolved_device_name == "cpu":
         torch.set_num_threads(args.num_threads)
         torch.set_num_interop_threads(args.num_interop_threads)
+
+    wandb_run = maybe_init_wandb(
+        args,
+        config=build_wandb_config(
+            args,
+            class_names=class_names,
+            resolved_device_name=resolved_device_name,
+            train_samples=train_samples,
+            val_samples=val_samples,
+            train_files=train_files,
+            val_files=val_files,
+        ),
+    )
 
     train_loader = make_loader(
         samples=train_samples,
@@ -503,6 +655,14 @@ def main() -> None:
             f"train_loss={train_loss:.4f} train_acc={train_acc:.4f} "
             f"val_loss={val_loss:.4f} val_acc={val_acc:.4f}"
         )
+        if wandb_run is not None:
+            wandb.log(
+                {
+                    **epoch_metrics,
+                    "best_val_accuracy_so_far": float(max(item["val_accuracy"] for item in history)),
+                },
+                step=epoch,
+            )
 
         if val_acc > best_val_acc:
             best_val_acc = val_acc
@@ -567,10 +727,47 @@ def main() -> None:
         "split_details": split_details,
         "best_val_accuracy": float(best_val_acc_eval),
         "validation_confusion_matrix": confusion.tolist(),
+        "wandb_project": args.wandb_project,
+        "wandb_entity": args.wandb_entity,
+        "wandb_run_name": args.wandb_run_name,
+        "wandb_group": args.wandb_group,
+        "wandb_mode": args.wandb_mode,
+        "wandb_url": (
+            wandb_run.url
+            if wandb_run is not None and getattr(wandb_run, "url", None)
+            else None
+        ),
+        "wandb_run_id": (
+            wandb_run.id
+            if wandb_run is not None and getattr(wandb_run, "id", None)
+            else None
+        ),
     }
     (args.output_dir / "training_summary.json").write_text(
         json.dumps(metadata | {"history": history}, indent=2)
     )
+
+    if wandb_run is not None:
+        confusion_data = []
+        for true_index, true_name in enumerate(class_names):
+            for pred_index, pred_name in enumerate(class_names):
+                confusion_data.append(
+                    [true_name, pred_name, int(confusion[true_index, pred_index])]
+                )
+        wandb.log(
+            {
+                "best_val_accuracy": float(best_val_acc_eval),
+                "confusion_matrix_table": wandb.Table(
+                    columns=["true_label", "pred_label", "count"],
+                    data=confusion_data,
+                ),
+            }
+        )
+        wandb.summary["best_val_accuracy"] = float(best_val_acc_eval)
+        wandb.summary["validation_confusion_matrix"] = confusion.tolist()
+        wandb.summary["samples_train"] = len(train_samples)
+        wandb.summary["samples_val"] = len(val_samples)
+        wandb.finish()
 
     print(f"resolved_device={resolved_device_name}")
     print(f"saved_checkpoint={args.output_dir / 'best_model.pt'}")

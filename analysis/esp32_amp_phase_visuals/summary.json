@@ -1,0 +1,15 @@
+{
+  "big_csv": "/Users/doyoung/Documents/FallDetection/dataset/esp32_raw_csi_variants/htltf_only/train/big/csi_260331_012032_minhyeok_big.csv",
+  "small_csv": "/Users/doyoung/Documents/FallDetection/dataset/esp32_raw_csi_variants/htltf_only/train/small/csi_260331_012014_minhyeok_small.csv",
+  "max_rows": 300,
+  "big_rows_used": 300,
+  "small_rows_used": 300,
+  "big_amplitude_mean": 48.20323181152344,
+  "small_amplitude_mean": 37.875823974609375,
+  "big_amplitude_std": 22.01753807067871,
+  "small_amplitude_std": 23.015108108520508,
+  "big_phase_std": 1.8330891132354736,
+  "small_phase_std": 1.8401167392730713,
+  "heatmap_path": "/Users/doyoung/Documents/FallDetection/analysis/esp32_amp_phase_visuals/amp_phase_heatmaps.png",
+  "summary_plot_path": "/Users/doyoung/Documents/FallDetection/analysis/esp32_amp_phase_visuals/amp_phase_subcarrier_summary.png"
+}

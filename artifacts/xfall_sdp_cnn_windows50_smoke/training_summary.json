@@ -1,0 +1,85 @@
+{
+  "dataset_root": "/Users/doyoung/Documents/FallDetection/dataset/xfall_sdp_10ms_real_shift_w50_w64_l20_tol4000",
+  "window_length": 50,
+  "output_dir": "/Users/doyoung/Documents/FallDetection/artifacts/xfall_sdp_cnn_windows50_smoke",
+  "class_names": [
+    "none",
+    "occupy",
+    "walk"
+  ],
+  "split_mode": "time_file",
+  "device_requested": "cpu",
+  "device_resolved": "cpu",
+  "mps_built": true,
+  "mps_available": false,
+  "epochs": 1,
+  "batch_size": 64,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "hidden_channels": [
+    32,
+    64
+  ],
+  "kernel_sizes": [
+    3,
+    3
+  ],
+  "val_ratio": 0.2,
+  "seed": 42,
+  "num_workers": 0,
+  "num_threads": 8,
+  "num_interop_threads": 2,
+  "samples_train": 20437,
+  "samples_val": 3203,
+  "train_source_file_counts": {
+    "none": 14,
+    "occupy": 19,
+    "walk": 42
+  },
+  "val_source_file_counts": {
+    "none": 4,
+    "occupy": 5,
+    "walk": 11
+  },
+  "split_details": {
+    "none": {
+      "file_count": 18,
+      "validation_file_count": 4
+    },
+    "occupy": {
+      "file_count": 24,
+      "validation_file_count": 5
+    },
+    "walk": {
+      "file_count": 53,
+      "validation_file_count": 11
+    }
+  },
+  "best_val_accuracy": 0.6219169528566968,
+  "validation_confusion_matrix": [
+    [
+      621,
+      279,
+      247
+    ],
+    [
+      122,
+      330,
+      151
+    ],
+    [
+      350,
+      62,
+      1041
+    ]
+  ],
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.9246179308362592,
+      "train_accuracy": 0.5523315555120615,
+      "val_loss": 0.9238190558267094,
+      "val_accuracy": 0.6219169528566968
+    }
+  ]
+}

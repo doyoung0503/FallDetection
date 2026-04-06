@@ -1,0 +1,282 @@
+{
+  "phase_sin_cos": {
+    "accuracy": {
+      "mean": 0.5792622133599202,
+      "std": 0.0
+    },
+    "macro_f1": {
+      "mean": 0.3667929292929293,
+      "std": 0.0
+    },
+    "best_validation_loss": {
+      "mean": 0.7084307064543376,
+      "std": 0.005413290997238952
+    },
+    "best_epoch": {
+      "mean": 1.0,
+      "std": 0.0
+    },
+    "mean_confusion_matrix": [
+      [
+        0,
+        422
+      ],
+      [
+        0,
+        581
+      ]
+    ]
+  },
+  "phase_temporal_diff": {
+    "accuracy": {
+      "mean": 0.6639032815198618,
+      "std": 0.007777775647114101
+    },
+    "macro_f1": {
+      "mean": 0.6520532229730509,
+      "std": 0.010185873962071572
+    },
+    "best_validation_loss": {
+      "mean": 0.627552999527755,
+      "std": 0.00373963427088517
+    },
+    "best_epoch": {
+      "mean": 11.333333333333334,
+      "std": 2.0816659994661326
+    },
+    "mean_confusion_matrix": [
+      [
+        231.66666666666666,
+        172.33333333333334
+      ],
+      [
+        152,
+        409
+      ]
+    ]
+  },
+  "phase_rolling_std5": {
+    "accuracy": {
+      "mean": 0.6002430133657352,
+      "std": 0.007390962977276107
+    },
+    "macro_f1": {
+      "mean": 0.5816584495127316,
+      "std": 0.010607285318780014
+    },
+    "best_validation_loss": {
+      "mean": 0.7037962681612732,
+      "std": 0.0215191517212785
+    },
+    "best_epoch": {
+      "mean": 19.0,
+      "std": 1.0
+    },
+    "mean_confusion_matrix": [
+      [
+        162.66666666666666,
+        186.33333333333334
+      ],
+      [
+        142.66666666666666,
+        331.3333333333333
+      ]
+    ]
+  },
+  "first_difference": {
+    "config": {
+      "variant_root": "/Users/doyoung/Documents/FallDetection/dataset/esp32_sequence_htltf_firstdiff_w64_s10_tol4000/first_difference/windows_64",
+      "epochs": 20,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "hidden_channels_1": 64,
+      "hidden_channels_2": 128,
+      "kernel_size_1": 5,
+      "kernel_size_2": 3,
+      "device": "mps",
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    "per_seed": [
+      {
+        "seed": 42,
+        "best_epoch": 20,
+        "best_validation_accuracy": 0.7616580310880829,
+        "best_validation_loss": 0.5127873440017354,
+        "macro_f1": 0.7582244008714597,
+        "confusion_matrix": [
+          [
+            310,
+            94
+          ],
+          [
+            136,
+            425
+          ]
+        ]
+      },
+      {
+        "seed": 43,
+        "best_epoch": 20,
+        "best_validation_accuracy": 0.7316062176165803,
+        "best_validation_loss": 0.6008016399460135,
+        "macro_f1": 0.7315773929386495,
+        "confusion_matrix": [
+          [
+            358,
+            46
+          ],
+          [
+            213,
+            348
+          ]
+        ]
+      },
+      {
+        "seed": 44,
+        "best_epoch": 20,
+        "best_validation_accuracy": 0.7471502590673575,
+        "best_validation_loss": 0.5193836702275153,
+        "macro_f1": 0.7443497672156207,
+        "confusion_matrix": [
+          [
+            310,
+            94
+          ],
+          [
+            150,
+            411
+          ]
+        ]
+      }
+    ],
+    "accuracy": {
+      "mean": 0.7468048359240069,
+      "std": 0.015028884226464343
+    },
+    "macro_f1": {
+      "mean": 0.7447171870085767,
+      "std": 0.013327303025031125
+    },
+    "best_validation_loss": {
+      "mean": 0.5443242180584215,
+      "std": 0.04902195699093448
+    },
+    "best_epoch": {
+      "mean": 20.0,
+      "std": 0.0
+    },
+    "mean_confusion_matrix": [
+      [
+        326,
+        78
+      ],
+      [
+        166.33333333333334,
+        394.6666666666667
+      ]
+    ]
+  },
+  "ma5": {
+    "config": {
+      "variant_root": "/Users/doyoung/Documents/FallDetection/dataset/esp32_sequence_htltf_ma5diff_w64_s10_tol4000/ma10_diff/windows_64",
+      "epochs": 20,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "hidden_channels_1": 64,
+      "hidden_channels_2": 128,
+      "kernel_size_1": 5,
+      "kernel_size_2": 3,
+      "device": "mps",
+      "seeds": [
+        42,
+        43,
+        44
+      ]
+    },
+    "per_seed": [
+      {
+        "seed": 42,
+        "best_epoch": 17,
+        "best_validation_accuracy": 0.7387606318347509,
+        "best_validation_loss": 0.5297886667318217,
+        "macro_f1": 0.7302721135099457,
+        "confusion_matrix": [
+          [
+            231,
+            118
+          ],
+          [
+            97,
+            377
+          ]
+        ]
+      },
+      {
+        "seed": 43,
+        "best_epoch": 15,
+        "best_validation_accuracy": 0.7047387606318347,
+        "best_validation_loss": 0.6045530587977946,
+        "macro_f1": 0.7008360596146855,
+        "confusion_matrix": [
+          [
+            243,
+            106
+          ],
+          [
+            137,
+            337
+          ]
+        ]
+      },
+      {
+        "seed": 44,
+        "best_epoch": 20,
+        "best_validation_accuracy": 0.7533414337788579,
+        "best_validation_loss": 0.5249971118761296,
+        "macro_f1": 0.7476119905793916,
+        "confusion_matrix": [
+          [
+            248,
+            101
+          ],
+          [
+            102,
+            372
+          ]
+        ]
+      }
+    ],
+    "accuracy": {
+      "mean": 0.7322802754151478,
+      "std": 0.024940954748223047
+    },
+    "macro_f1": {
+      "mean": 0.7262400545680077,
+      "std": 0.023647199704979555
+    },
+    "best_validation_loss": {
+      "mean": 0.5531129458019153,
+      "std": 0.04461281955061125
+    },
+    "best_epoch": {
+      "mean": 17.333333333333332,
+      "std": 2.516611478423583
+    },
+    "mean_confusion_matrix": [
+      [
+        240.66666666666666,
+        108.33333333333333
+      ],
+      [
+        112,
+        362
+      ]
+    ]
+  }
+}

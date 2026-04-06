@@ -1,0 +1,19 @@
+{"time":"2026-04-02T12:22:08.247323+09:00","level":"INFO","msg":"wandb-core"}
+{"time":"2026-04-02T12:22:08.2482+09:00","level":"INFO","msg":"stream: starting","core version":"0.25.1"}
+{"time":"2026-04-02T12:22:08.686053+09:00","level":"INFO","msg":"stream: created new stream","id":"6o8cmxui"}
+{"time":"2026-04-02T12:22:08.686168+09:00","level":"INFO","msg":"handler: started"}
+{"time":"2026-04-02T12:22:08.686665+09:00","level":"INFO","msg":"stream: started"}
+{"time":"2026-04-02T12:22:08.686689+09:00","level":"INFO","msg":"sender: started"}
+{"time":"2026-04-02T12:22:08.686687+09:00","level":"INFO","msg":"writer: started","stream_id":"6o8cmxui"}
+{"time":"2026-04-02T12:22:10.357602+09:00","level":"INFO","msg":"filestream: sending request","total_files":1,"console_offset":0,"console_lines":1}
+{"time":"2026-04-02T12:22:10.820193+09:00","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-04-02T12:22:25.359219+09:00","level":"INFO","msg":"filestream: sending request","total_files":3,"history_offset":0,"history_lines":20,"console_offset":0,"console_lines":20,"uploaded_len":2}
+{"time":"2026-04-02T12:22:25.882381+09:00","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-04-02T12:22:27.666228+09:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2026-04-02T12:22:27.666315+09:00","level":"INFO","msg":"filestream: sending request","total_files":0,"uploaded_len":4,"complete":true,"exit_code":0}
+{"time":"2026-04-02T12:22:28.085292+09:00","level":"INFO","msg":"filestream: request sent","status":"200 OK"}
+{"time":"2026-04-02T12:22:28.086649+09:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2026-04-02T12:22:28.092856+09:00","level":"INFO","msg":"stream: closing"}
+{"time":"2026-04-02T12:22:28.092883+09:00","level":"INFO","msg":"handler: closed"}
+{"time":"2026-04-02T12:22:28.093104+09:00","level":"INFO","msg":"sender: closed"}
+{"time":"2026-04-02T12:22:28.093116+09:00","level":"INFO","msg":"stream: closed"}

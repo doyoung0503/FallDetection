@@ -1,0 +1,24 @@
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_setup.py:_flush():81] Current SDK version is 0.25.1
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_setup.py:_flush():81] Configure stats pid to 12124
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_setup.py:_flush():81] Loading settings from environment variables
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_init.py:setup_run_log_directory():717] Logging user logs to /Users/doyoung/Documents/FallDetection/artifacts/wandb_search/windows_64/windows_64_adam_highcapacity/wandb/wandb/run-20260402_122254-wtlr4k2i/logs/debug.log
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_init.py:setup_run_log_directory():718] Logging internal logs to /Users/doyoung/Documents/FallDetection/artifacts/wandb_search/windows_64/windows_64_adam_highcapacity/wandb/wandb/run-20260402_122254-wtlr4k2i/logs/debug-internal.log
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_init.py:init():844] calling init triggers
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_init.py:init():849] wandb.init called with sweep_config: {}
+config: {'windows_root': '/Users/doyoung/Documents/FallDetection/dataset/sequence_10ms_amp_mask/windows_64', 'output_dir': '/Users/doyoung/Documents/FallDetection/artifacts/wandb_search/windows_64/windows_64_adam_highcapacity', 'class_names': ['none', 'occupy', 'walk'], 'split_mode': 'time_file', 'val_ratio': 0.2, 'seed': 42, 'device_requested': 'mps', 'device_resolved': 'mps', 'epochs': 20, 'batch_size': 64, 'learning_rate': 0.0007, 'weight_decay': 0.001, 'optimizer': 'adam', 'sam_rho': None, 'sgd_momentum': None, 'hidden_channels_1': 128, 'hidden_channels_2': 256, 'kernel_size_1': 5, 'kernel_size_2': 5, 'num_workers': 0, 'num_threads': None, 'num_interop_threads': None, 'samples_train': 1914, 'samples_val': 563, 'train_source_file_counts': {'none': 14, 'occupy': 11, 'walk': 30}, 'val_source_file_counts': {'none': 3, 'occupy': 3, 'walk': 8}, '_wandb': {}}
+2026-04-02 12:22:54,583 INFO    MainThread:12124 [wandb_init.py:init():892] starting backend
+2026-04-02 12:22:54,807 INFO    MainThread:12124 [wandb_init.py:init():895] sending inform_init request
+2026-04-02 12:22:54,826 INFO    MainThread:12124 [wandb_init.py:init():903] backend started and connected
+2026-04-02 12:22:54,835 INFO    MainThread:12124 [wandb_init.py:init():973] updated telemetry
+2026-04-02 12:22:54,847 INFO    MainThread:12124 [wandb_init.py:init():997] communicating run to backend with 90.0 second timeout
+2026-04-02 12:22:55,677 INFO    MainThread:12124 [wandb_init.py:init():1042] starting run threads in backend
+2026-04-02 12:22:55,707 INFO    MainThread:12124 [wandb_run.py:_console_start():2524] atexit reg
+2026-04-02 12:22:55,707 INFO    MainThread:12124 [wandb_run.py:_redirect():2373] redirect: wrap_raw
+2026-04-02 12:22:55,707 INFO    MainThread:12124 [wandb_run.py:_redirect():2442] Wrapping output streams.
+2026-04-02 12:22:55,708 INFO    MainThread:12124 [wandb_run.py:_redirect():2465] Redirects installed.
+2026-04-02 12:22:55,709 INFO    MainThread:12124 [wandb_init.py:init():1082] run started, returning control to user process
+2026-04-02 12:23:11,585 INFO    MainThread:12124 [wandb_run.py:_finish():2291] finishing run doyoung0503-kwangwoon-university/fall-detection-sequence-cnn-search/wtlr4k2i
+2026-04-02 12:23:11,586 INFO    MainThread:12124 [wandb_run.py:_atexit_cleanup():2490] got exitcode: 0
+2026-04-02 12:23:11,586 INFO    MainThread:12124 [wandb_run.py:_restore():2472] restore
+2026-04-02 12:23:11,586 INFO    MainThread:12124 [wandb_run.py:_restore():2478] restore done
+2026-04-02 12:23:15,259 INFO    MainThread:12124 [wandb_run.py:_footer_sync_info():3868] logging synced files
