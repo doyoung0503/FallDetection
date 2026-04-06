@@ -82,6 +82,12 @@ def parse_args() -> argparse.Namespace:
         help="Only gaps up to this many grid steps are interpolated.",
     )
     parser.add_argument(
+        "--interp-mode",
+        choices=("linear", "forward_fill", "nearest"),
+        default="linear",
+        help="Interpolation method used when filling short missing gaps.",
+    )
+    parser.add_argument(
         "--window-length",
         type=int,
         default=64,
@@ -166,6 +172,7 @@ def build_segments(
     grid_us: int,
     grid_tolerance_us: int,
     max_interp_gap_steps: int,
+    interp_mode: str,
 ) -> list[SequenceSegment]:
     if not samples:
         return []
@@ -196,9 +203,20 @@ def build_segments(
         if can_snap:
             for step in range(1, nearest_steps):
                 alpha = step / nearest_steps
-                interpolated = (
-                    (1.0 - alpha) * prev_sample.amplitude + alpha * sample.amplitude
-                ).astype(np.float32)
+                if interp_mode == "linear":
+                    interpolated = (
+                        (1.0 - alpha) * prev_sample.amplitude + alpha * sample.amplitude
+                    ).astype(np.float32)
+                elif interp_mode == "forward_fill":
+                    interpolated = prev_sample.amplitude.astype(np.float32)
+                elif interp_mode == "nearest":
+                    interpolated = (
+                        prev_sample.amplitude
+                        if alpha < 0.5
+                        else sample.amplitude
+                    ).astype(np.float32)
+                else:
+                    raise ValueError(f"Unsupported interp_mode: {interp_mode}")
                 prev_grid_timestamp += grid_us
                 amplitudes.append(interpolated)
                 interp_mask.append(1)
@@ -358,6 +376,7 @@ def main() -> None:
         "grid_us": args.grid_us,
         "grid_tolerance_us": args.grid_tolerance_us,
         "max_interp_gap_steps": args.max_interp_gap_steps,
+        "interp_mode": args.interp_mode,
         "window_length": args.window_length,
         "window_stride": args.window_stride,
         "variants": {variant_name: {} for variant_name in VARIANT_NAMES},
@@ -402,6 +421,7 @@ def main() -> None:
                     grid_us=args.grid_us,
                     grid_tolerance_us=args.grid_tolerance_us,
                     max_interp_gap_steps=args.max_interp_gap_steps,
+                    interp_mode=args.interp_mode,
                 )
                 summary["source_stats"]["segments"] += len(segments)
 

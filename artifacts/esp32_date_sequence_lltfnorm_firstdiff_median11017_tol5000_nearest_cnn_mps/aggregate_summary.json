@@ -1,0 +1,88 @@
+{
+  "config": {
+    "variant_root": "/Users/doyoung/Documents/FallDetection/dataset/esp32_date_sequence_lltfnorm_firstdiff_w64_s10_median11017_tol5000_nearest/first_difference/windows_64",
+    "epochs": 20,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "hidden_channels_1": 64,
+    "hidden_channels_2": 128,
+    "kernel_size_1": 5,
+    "kernel_size_2": 3,
+    "device": "mps",
+    "seeds": [
+      42,
+      43,
+      44
+    ]
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "best_epoch": 2,
+      "best_validation_accuracy": 0.7225177304964538,
+      "best_validation_loss": 0.6281805511907483,
+      "macro_f1": 0.6155490391012666,
+      "confusion_matrix": [
+        [
+          110,
+          283
+        ],
+        [
+          30,
+          705
+        ]
+      ]
+    },
+    {
+      "seed": 43,
+      "best_epoch": 3,
+      "best_validation_accuracy": 0.7588652482269503,
+      "best_validation_loss": 0.5373583059784368,
+      "macro_f1": 0.6850804911995467,
+      "confusion_matrix": [
+        [
+          155,
+          238
+        ],
+        [
+          34,
+          701
+        ]
+      ]
+    },
+    {
+      "seed": 44,
+      "best_epoch": 2,
+      "best_validation_accuracy": 0.7278368794326241,
+      "best_validation_loss": 0.5839843289226505,
+      "macro_f1": 0.6525780053152266,
+      "confusion_matrix": [
+        [
+          148,
+          245
+        ],
+        [
+          62,
+          673
+        ]
+      ]
+    }
+  ],
+  "accuracy": {
+    "mean": 0.7364066193853428,
+    "std": 0.0196307372106884
+  },
+  "macro_f1": {
+    "mean": 0.65106917853868,
+    "std": 0.03479027344539096
+  },
+  "best_validation_loss": {
+    "mean": 0.5831743953639452,
+    "std": 0.04541653939511958
+  },
+  "best_epoch": {
+    "mean": 2.3333333333333335,
+    "std": 0.5773502691896257
+  }
+}

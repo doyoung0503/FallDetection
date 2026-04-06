@@ -412,12 +412,119 @@ paper-style SDP:
 해석:
 - 현재 문제에서는 raw amplitude보다 변화량 강조(`first difference`)가 훨씬 강력함
 
-## 11. Current Best Setting
+## 11. LLTF-Based Amplitude Normalization
 
-현재까지 `esp32 big/small` 문제에서 가장 강한 실험적 baseline은 다음과 같다.
+다음으로 `LLTF`와 `HT-LTF`의 공통 52개 carrier를 이용해, 각 row마다 robust median ratio scale factor를 계산하고 전체 `HT-LTF amplitude`를 정규화하는 전처리를 추가했다.
+
+정규화 함수:
+- `scripts/csi_amplitude_normalization.py`
+
+핵심 아이디어:
+- `H_L`, `H_HT`에서 amplitude만 사용
+- 공통 carrier 구간에서 `(HT amplitude) / (LLTF amplitude)` ratio 계산
+- ratio의 median을 scale factor로 사용
+- 전체 `HT-LTF amplitude`를 이 scale factor로 나눔
+
+같은 raw preprocessing + `first difference` 기준 3-seed 평균:
+- 기존 `HT-LTF first difference`: acc `0.8600 ± 0.0110`, macro F1 `0.8480 ± 0.0092`
+- `LLTF-normalized HT-LTF first difference`: acc `0.8663 ± 0.0030`, macro F1 `0.8486 ± 0.0022`
+
+관련 결과:
+- `artifacts/esp32_sequence_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+- `artifacts/esp32_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+
+해석:
+- 사람 기준 split에서는 LLTF normalization이 작은 개선을 보였음
+- accuracy는 약간 상승했고, std가 줄어들어 결과가 더 안정적이었음
+- macro F1은 거의 같아서 “큰 성능 도약”보다는 “약한 보정 이득”에 가까움
+
+## 12. Date-Based Split Experiments
+
+사람 기준 split 대신, **같은 날짜에 수집된 파일이 train/validation에 섞이지 않도록** 날짜 기준 split을 새로 만들었다.
+
+가능한 날짜:
+- `260331`
+- `260401`
+- `260402`
+
+정확한 `8:2`는 날짜가 3개뿐이라 불가능했고, 가장 가까운 조합은 아래였다.
+
+split:
+- train: `260331`, `260402`
+- validation: `260401`
+
+행 수 비율:
+- train: `303126` rows (`75.67%`)
+- validation: `97458` rows (`24.33%`)
+
+관련 요약:
+- `dataset/esp32_raw_csi_variants_by_date/summary.json`
+- `dataset/esp32_raw_csi_variants_by_date/split_manifest.csv`
+
+### 12.1 Sequence Baseline Under Date Split
+
+고정한 전처리:
+- `grid_us = 11017`
+- `grid_tolerance_us = 5000`
+- `interp_mode = nearest`
+- `allow up to 2 missing packets`
+- `window = 64`
+- `stride = 10`
+
+3-seed 평균:
+- `raw amplitude`: acc `0.4656 ± 0.0246`, macro F1 `0.4533 ± 0.0205`
+- `first difference`: acc `0.6814 ± 0.0175`, macro F1 `0.5482 ± 0.0783`
+- `LLTF-normalized first difference`: acc `0.7364 ± 0.0196`, macro F1 `0.6511 ± 0.0348`
+
+관련 결과:
+- `artifacts/esp32_date_sequence_rawamp_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+- `artifacts/esp32_date_sequence_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+- `artifacts/esp32_date_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+
+해석:
+- date split은 사람 split보다 훨씬 어려웠음
+- `raw amplitude`는 날짜 도메인 변화에 매우 약했음
+- `first difference`는 date shift에서도 유효했음
+- `LLTF-normalized first difference`가 date split에서 가장 좋았고, `first difference` 대비 accuracy 약 `+5.5%p`, macro F1 약 `+10.3%p` 개선
+
+## 13. Date-Based SDP Comparison
+
+같은 date split에서 XFall paper-style SDP도 비교했다.
+
+설정:
+- `window = 100`
+- `lag = 20`
+- `rho_mode = magnitude`
+- `column_normalization = shift`
+- `grid_us = 11017`
+- `grid_tolerance_us = 5000`
+- `max_interp_gap_steps = 3`
+- `weighted cross entropy`
+
+비교 대상:
+- `HT-LTF only` SDP
+- `LLTF-normalized HT-LTF` SDP
+
+3-seed 평균:
+- `HT-LTF SDP`: acc `0.4308 ± 0.0034`, macro F1 `0.4268 ± 0.0044`
+- `LLTF-normalized SDP`: acc `0.4318 ± 0.0017`, macro F1 `0.4273 ± 0.0032`
+
+관련 결과:
+- `artifacts/esp32_date_xfall_sdp_htltf_w100_l20_grid11017_tol5000_mag_weighted/aggregate_summary.json`
+- `artifacts/esp32_date_xfall_sdp_lltfnorm_w100_l20_grid11017_tol5000_mag_weighted/aggregate_summary.json`
+
+해석:
+- date split에서는 SDP가 sequence `first difference` baseline보다 훨씬 약했음
+- LLTF normalization을 넣어도 SDP 성능은 거의 달라지지 않았음
+- 현재 `big/small` 문제에서 date-domain generalization에는 paper-style SDP가 잘 맞지 않음
+
+## 14. Current Best Setting
+
+현재까지 `esp32 big/small` 문제에서 가장 강한 실험적 baseline은 **사람 기준 split**과 **날짜 기준 split**에서 모두 `LLTF-normalized first difference` 계열이다.
 
 전처리:
-- `HT-LTF only`
+- `LLTF+HT-LTF raw`에서 LLTF 기반 scale factor 계산
+- 정규화된 `HT-LTF amplitude` 사용
 - `grid_us = 11017`
 - `grid_tolerance_us = 5000`
 - `interp_mode = nearest`
@@ -430,18 +537,25 @@ paper-style SDP:
 모델:
 - 1D CNN
 
-성능:
-- validation accuracy `0.8600 ± 0.0110`
-- macro F1 `0.8480 ± 0.0092`
+사람 기준 split 성능:
+- validation accuracy `0.8663 ± 0.0030`
+- macro F1 `0.8486 ± 0.0022`
 
 관련 결과:
-- `artifacts/esp32_sequence_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+- `artifacts/esp32_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
 
-## 12. Practical Conclusions
+날짜 기준 split 성능:
+- validation accuracy `0.7364 ± 0.0196`
+- macro F1 `0.6511 ± 0.0348`
+
+관련 결과:
+- `artifacts/esp32_date_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+
+## 15. Practical Conclusions
 
 지금까지의 실험에서 얻은 결론은 다음과 같다.
 
-1. `HT-LTF only`가 가장 안정적인 raw CSI 입력이었다.
+1. `HT-LTF`가 주된 분류 신호였고, `LLTF`는 직접 입력보다 **정규화 기준**으로 사용할 때 더 유용했다.
 2. 사람 기준 split을 쓰면 row 단독 모델은 약하고, 시계열 모델이 필요하다.
 3. `global 11ms`보다 실제 median인 `11017us`를 grid로 두는 것이 더 좋았다.
 4. tolerance는 작게 잡으면 데이터가 무너지고, 현재는 `5000us`가 가장 좋았다.
@@ -449,13 +563,17 @@ paper-style SDP:
 6. packet filtering은 현재 기준으로 도움이 되지 않았다.
 7. raw amplitude보다 변화량 기반 feature가 훨씬 중요했다.
 8. amplitude 계열에서는 `first difference`가 가장 좋은 baseline이었다.
-9. phase는 단독으로는 약했지만, `phase_temporal_diff`는 보조 feature 후보로 남아 있다.
+9. LLTF 기반 amplitude normalization은 사람 split에서는 작은 이득, date split에서는 더 큰 이득을 보였다.
+10. phase는 단독으로는 약했지만, `phase_temporal_diff`는 보조 feature 후보로 남아 있다.
+11. date split에서는 raw amplitude가 크게 무너졌고, 변화량 feature가 훨씬 더 robust했다.
+12. paper-style SDP는 현재 `big/small` 문제의 date-domain generalization 기준으로는 경쟁력이 낮았다.
 
-## 13. Recommended Next Steps
+## 16. Recommended Next Steps
 
 다음 실험 우선순위는 아래와 같다.
 
-1. `raw amplitude + first difference` 멀티채널 입력
-2. `first difference + phase_temporal_diff` 조합
+1. date split 기준으로 `raw amplitude + first difference` 멀티채널 입력
+2. date split 기준으로 `first difference + phase_temporal_diff` 조합
 3. `LLTF + HT-LTF`를 두 branch로 나눠 입력하는 모델
-4. preprocessing은 현재 best setting을 고정한 채 feature 조합만 비교
+4. date split 기준으로 `LLTF normalization`이 다른 feature에도 이득이 있는지 확인
+5. preprocessing은 현재 best setting을 고정한 채 feature 조합만 비교

@@ -192,6 +192,42 @@
 
 ---
 
+#### `scripts/split_esp32_raw_csi_variants_by_date.py`
+
+역할:
+- `esp32_raw_csi_variants`를 다시 읽어, **같은 날짜가 train/validation에 섞이지 않는** date-based split을 생성한다.
+
+입력:
+- `dataset/esp32_raw_csi_variants`
+
+출력:
+- `dataset/esp32_raw_csi_variants_by_date`
+
+특징:
+- 하드링크를 사용해 파일을 재배치하므로 저장 공간 증가를 최소화한다.
+- `summary.json`, `split_manifest.csv`를 함께 생성한다.
+
+의미:
+- 사람 기준 split과 별개로, **날짜 도메인 일반화**를 측정하기 위한 기준 split builder다.
+
+---
+
+#### `scripts/csi_amplitude_normalization.py`
+
+역할:
+- `LLTF`와 `HT-LTF`의 공통 주파수 구간을 매핑해 row별 scale factor를 계산한다.
+- 이 scale factor로 `HT-LTF amplitude` 또는 `HT-LTF complex CSI`를 정규화한다.
+
+핵심 함수:
+- `compute_lltf_htltf_scale_factor(...)`
+- `normalize_htltf_amplitude_with_lltf(...)`
+- `normalize_htltf_complex_with_lltf(...)`
+
+의미:
+- packet-level gain/AGC 영향을 줄이기 위한 **LLTF 기반 amplitude normalization** 유틸리티다.
+
+---
+
 ### 5.2 일반 시계열 데이터셋 생성 계열
 
 #### `scripts/build_resampled_sequence_dataset.py`
@@ -226,6 +262,32 @@
 
 의미:
 - feature extraction 이전의 **기본 sequence preprocessing baseline**
+
+현재 로컬 수정 포인트:
+- `interp_mode = linear / forward_fill / nearest` 지원
+- 이후 raw amplitude baseline 비교에서 `nearest` 보간 실험에 사용됨
+
+---
+
+#### `scripts/build_esp32_sequence_lltfnorm_dataset.py`
+
+역할:
+- `LLTF+HT-LTF raw CSI`에서 row별 LLTF 기반 amplitude normalization을 수행한 뒤
+- 정규화된 `HT-LTF` 시계열로 `first difference` window 데이터셋을 생성한다.
+
+입력:
+- `dataset/esp32_raw_csi_variants/lltf_htltf`
+- `dataset/esp32_raw_csi_variants_by_date/lltf_htltf`
+
+출력 예:
+- `dataset/esp32_sequence_lltfnorm_firstdiff_*`
+- `dataset/esp32_date_sequence_lltfnorm_firstdiff_*`
+
+특징:
+- `num_workers=1`일 때 순차 처리 fallback을 지원한다.
+
+의미:
+- 현재 `esp32` 실험에서 **최고 성능 baseline**을 만드는 핵심 builder다.
 
 ---
 
@@ -355,9 +417,16 @@
 
 입력:
 - `dataset/esp32_raw_csi_variants/htltf_only`
+- 또는 `dataset/esp32_raw_csi_variants/lltf_htltf`를 이용한 LLTF-normalized path
 
 출력:
 - `dataset/esp32_xfall_sdp_*`
+
+현재 로컬 수정 포인트:
+- `--input-format`
+  - `htltf_only`
+  - `lltf_htltf_norm`
+- LLTF-normalized complex HT-LTF에서 직접 SDP를 생성할 수 있도록 확장됨
 
 ---
 
@@ -537,6 +606,9 @@
   - `raw_stride`에서 HT-LTF only 추출
 - `dataset/esp32_raw_csi_variants`
   - `esp32`에서 `LLTF only`, `HT-LTF only`, `LLTF+HT-LTF` 추출 + 사람 split
+- `dataset/esp32_raw_csi_variants_by_date`
+  - `esp32_raw_csi_variants`를 날짜 기준으로 재배치한 split
+  - 현재는 `260331 + 260402 -> train`, `260401 -> validation`
 
 ### 6.3 일반 시계열 데이터셋 계열
 
@@ -554,6 +626,14 @@
   - raw amplitude sequence 데이터셋
 - `dataset/esp32_sequence_phase_*`
   - phase-derived feature 데이터셋
+- `dataset/esp32_sequence_lltfnorm_firstdiff_*`
+  - 사람 기준 split에서 LLTF 기반 정규화를 적용한 `first difference` 데이터셋
+- `dataset/esp32_date_sequence_htltf_rawamp_*`
+  - 날짜 기준 split에서 raw amplitude sequence 데이터셋
+- `dataset/esp32_date_sequence_htltf_firstdiff_*`
+  - 날짜 기준 split에서 `first difference` 데이터셋
+- `dataset/esp32_date_sequence_lltfnorm_firstdiff_*`
+  - 날짜 기준 split에서 LLTF-normalized `first difference` 데이터셋
 
 ### 6.4 SDP 계열
 
@@ -563,6 +643,8 @@
   - `none / occupy / walk`용 lag-first SDP
 - `dataset/esp32_xfall_sdp_*`
   - `esp32`용 paper-style SDP
+- `dataset/esp32_date_xfall_sdp_*`
+  - 날짜 기준 split에서 생성한 `esp32`용 paper-style SDP
 
 ---
 
@@ -632,6 +714,8 @@
   - `interp_only / interp_mask / interp_mask_deltat`
 - `esp32_sequence_firstdiff_*`
   - `first difference` 중심 전처리 ablation
+- `esp32_sequence_lltfnorm_firstdiff_*`
+  - 사람 기준 split에서 LLTF-normalized `first difference`
 - `esp32_sequence_ma*`
   - moving-average residual 계열
 - `esp32_sequence_rollstd5_*`
@@ -640,6 +724,12 @@
   - phase feature 실험
 - `esp32_sequence_rawamp_*`
   - raw amplitude baseline
+- `esp32_date_sequence_rawamp_*`
+  - 날짜 기준 split raw amplitude baseline
+- `esp32_date_sequence_firstdiff_*`
+  - 날짜 기준 split first-difference baseline
+- `esp32_date_sequence_lltfnorm_firstdiff_*`
+  - 날짜 기준 split의 최고 sequence baseline
 
 ### 8.3 XFall / SDP 계열
 
@@ -647,6 +737,8 @@
   - `none / occupy / walk` SDP 실험
 - `esp32_xfall_sdp_*`
   - `esp32` SDP 실험
+- `esp32_date_xfall_sdp_*`
+  - 날짜 기준 split에서 비교한 SDP 실험
 
 ### 8.4 요약 JSON
 
@@ -668,12 +760,14 @@
 
 1. `esp32` 데이터셋 전용 raw CSI variant 추출
 2. `esp32` 사람 기준 split 파이프라인
-3. `esp32` 시계열 dataset builder
-4. amplitude / phase / SDP feature builder
-5. adaptive gap reconstruction builder
-6. 3-seed batch runner
-7. amplitude/phase/gap EDA 스크립트
-8. `experience.md` 및 이번 `project_inventory.md`
+3. `esp32` 날짜 기준 split 파이프라인
+4. LLTF 기반 amplitude normalization 유틸리티
+5. `esp32` 시계열 dataset builder
+6. amplitude / phase / SDP feature builder
+7. adaptive gap reconstruction builder
+8. 3-seed batch runner
+9. amplitude/phase/gap EDA 스크립트
+10. `experience.md` 및 이번 `project_inventory.md`
 
 ### 9.2 기존 파일의 실질 수정
 
@@ -697,6 +791,15 @@
 즉 현재 `esp32` preprocessing 연구에서 사실상 가장 많이 확장된 스크립트는  
 `build_esp32_sequence_ma10_dataset.py` 이다.
 
+- `scripts/build_esp32_sequence_variants.py`
+  - `interp_mode`를 지원하도록 확장
+  - `linear / forward_fill / nearest` raw amplitude 비교에 사용됨
+
+- `scripts/build_esp32_xfall_sdp_dataset.py`
+  - `--input-format` 추가
+  - `htltf_only`와 `lltf_htltf_norm` 두 경로를 모두 지원
+  - LLTF-normalized complex HT-LTF에서 paper-style SDP를 직접 생성 가능
+
 ---
 
 ## 10. 현재 기준 추천 읽기 순서
@@ -711,19 +814,26 @@
    - 파일/코드 구조 이해
 4. 핵심 스크립트 읽기
    - `scripts/extract_esp32_raw_csi_variants.py`
+   - `scripts/split_esp32_raw_csi_variants_by_date.py`
+   - `scripts/csi_amplitude_normalization.py`
    - `scripts/build_esp32_sequence_ma10_dataset.py`
+   - `scripts/build_esp32_sequence_lltfnorm_dataset.py`
    - `scripts/train_esp32_sequence_cnn_torch.py`
 5. 결과 확인
-   - `artifacts/esp32_sequence_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+   - `artifacts/esp32_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+   - `artifacts/esp32_date_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
 
 ---
 
 ## 11. 현재 가장 중요한 기준점
 
-현재 `esp32 big/small` 실험에서 사실상 기준점이 되는 설정은 다음이다.
+현재 `esp32 big/small` 실험에서 가장 중요한 기준점은 두 가지다.
+
+### 11.1 사람 기준 split baseline
 
 raw preprocessing:
-- `HT-LTF only`
+- `LLTF+HT-LTF raw`에서 LLTF 기반 scale factor 계산
+- 정규화된 `HT-LTF amplitude`
 - `grid_us = 11017`
 - `grid_tolerance_us = 5000`
 - `interp_mode = nearest`
@@ -737,11 +847,41 @@ model:
 - `1D CNN`
 
 결과:
-- validation accuracy `0.8600 ± 0.0110`
-- macro F1 `0.8480 ± 0.0092`
+- validation accuracy `0.8663 ± 0.0030`
+- macro F1 `0.8486 ± 0.0022`
 
 관련 결과:
-- `artifacts/esp32_sequence_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+- `artifacts/esp32_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
 
-이 설정이 현재 이후 실험의 baseline으로 보는 것이 가장 자연스럽다.
+### 11.2 날짜 기준 split baseline
 
+split:
+- train `260331 + 260402`
+- validation `260401`
+
+raw preprocessing:
+- `LLTF+HT-LTF raw`에서 LLTF 기반 scale factor 계산
+- 정규화된 `HT-LTF amplitude`
+- `grid_us = 11017`
+- `grid_tolerance_us = 5000`
+- `interp_mode = nearest`
+- `allow up to 2 missing packets`
+- `packet_filter = none`
+
+feature:
+- `first difference`
+
+model:
+- `1D CNN`
+
+결과:
+- validation accuracy `0.7364 ± 0.0196`
+- macro F1 `0.6511 ± 0.0348`
+
+관련 결과:
+- `artifacts/esp32_date_sequence_lltfnorm_firstdiff_median11017_tol5000_nearest_cnn_mps/aggregate_summary.json`
+
+정리:
+- 사람 기준 split에서는 `LLTF-normalized first difference`가 최고 baseline이다.
+- 날짜 기준 split에서도 같은 조합이 최고였다.
+- 반면 date split에서 paper-style SDP는 `~0.431` 수준으로 훨씬 약했다.

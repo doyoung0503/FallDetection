@@ -11,12 +11,16 @@ from pathlib import Path
 
 import numpy as np
 
+from csi_amplitude_normalization import normalize_htltf_complex_with_lltf
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_INPUT_ROOT = PROJECT_ROOT / "dataset" / "esp32_raw_csi_variants" / "htltf_only"
 DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "dataset" / "esp32_xfall_sdp_htltf_w100_l20_s10_tol4000"
 
-INPUT_DIM = 228
+HTLTF_INPUT_DIM = 228
+LLTF_HTLTF_INPUT_DIM = 332
+NUM_LLTF = 52
 NUM_SUBCARRIERS = 114
 CLASS_NAMES = ["big", "small"]
 SPLITS = ["train", "validation"]
@@ -60,6 +64,16 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_OUTPUT_ROOT,
         help="Root directory where SDP windows and summary files will be written.",
+    )
+    parser.add_argument(
+        "--input-format",
+        choices=["htltf_only", "lltf_htltf_norm"],
+        default="htltf_only",
+        help=(
+            "Input CSV payload format. 'htltf_only' uses 114 HT-LTF complex bins. "
+            "'lltf_htltf_norm' uses 52 LLTF + 114 HT-LTF bins and scales HT-LTF "
+            "with an LLTF-derived scalar before SDP construction."
+        ),
     )
     parser.add_argument(
         "--grid-us",
@@ -118,23 +132,44 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def parse_complex_csi(data_str: str) -> np.ndarray:
+def parse_complex_csi(data_str: str, input_format: str) -> np.ndarray:
     values = ast.literal_eval(data_str)
-    if len(values) != INPUT_DIM:
-        raise ValueError(f"Expected {INPUT_DIM} values, got {len(values)}")
-    arr = np.asarray(values, dtype=np.float32).reshape(NUM_SUBCARRIERS, 2)
-    return (arr[:, 1] + 1j * arr[:, 0]).astype(np.complex64)
+    if input_format == "htltf_only":
+        if len(values) != HTLTF_INPUT_DIM:
+            raise ValueError(f"Expected {HTLTF_INPUT_DIM} values, got {len(values)}")
+        arr = np.asarray(values, dtype=np.float32).reshape(NUM_SUBCARRIERS, 2)
+        return (arr[:, 1] + 1j * arr[:, 0]).astype(np.complex64)
+
+    if input_format == "lltf_htltf_norm":
+        if len(values) != LLTF_HTLTF_INPUT_DIM:
+            raise ValueError(f"Expected {LLTF_HTLTF_INPUT_DIM} values, got {len(values)}")
+        arr = np.asarray(values, dtype=np.float32).reshape(NUM_LLTF + NUM_SUBCARRIERS, 2)
+        csi = (arr[:, 1] + 1j * arr[:, 0]).astype(np.complex64)
+        h_l = csi[:NUM_LLTF]
+        h_ht = csi[NUM_LLTF:]
+        return normalize_htltf_complex_with_lltf(h_l, h_ht)
+
+    raise ValueError(f"Unsupported input format: {input_format}")
 
 
-def load_observed_samples(csv_path: Path) -> list[ObservedSample]:
+def expected_len_for(input_format: str) -> int:
+    if input_format == "htltf_only":
+        return HTLTF_INPUT_DIM
+    if input_format == "lltf_htltf_norm":
+        return LLTF_HTLTF_INPUT_DIM
+    raise ValueError(f"Unsupported input format: {input_format}")
+
+
+def load_observed_samples(csv_path: Path, input_format: str) -> list[ObservedSample]:
     samples: list[ObservedSample] = []
+    expected_len = expected_len_for(input_format)
     with csv_path.open(newline="") as handle:
         reader = csv.DictReader(handle)
         for row_number, row in enumerate(reader, start=2):
-            if row.get("len") != str(INPUT_DIM):
+            if row.get("len") != str(expected_len):
                 continue
             try:
-                csi = parse_complex_csi(row["data"])
+                csi = parse_complex_csi(row["data"], input_format=input_format)
                 local_timestamp = int(row["local_timestamp"])
             except Exception:
                 continue
@@ -439,7 +474,7 @@ def main() -> None:
 
             for csv_path in sorted(class_dir.glob("*.csv")):
                 stats["files_seen"] += 1
-                samples = load_observed_samples(csv_path)
+                samples = load_observed_samples(csv_path, input_format=args.input_format)
                 stats["rows_seen"] += len(samples)
                 if not samples:
                     continue
@@ -473,6 +508,7 @@ def main() -> None:
     summary = {
         "input_root": str(args.input_root),
         "output_root": str(output_root),
+        "input_format": args.input_format,
         "grid_us": args.grid_us,
         "grid_tolerance_us": args.grid_tolerance_us,
         "max_interp_gap_steps": args.max_interp_gap_steps,
